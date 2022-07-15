@@ -35,8 +35,5 @@
     "postcss-pxtorem": "5.1.1",
     "vant": "^2.12.48",
     "vue-template-compiler": "^2.6.14"
-  },
-  "gitHooks": {
-    "pre-commit": "lint-staged"
   }
 }

@@ -1,7 +1,7 @@
-import axios from "axios";
+import axios from 'axios'
 const request = axios.create({
-  baseURL: "http://toutiao.itheima.net",
-  timeout: 3000,
-});
+  baseURL: 'http://toutiao.itheima.net',
+  timeout: 3000
+})
 
-export default request;
+export default request
