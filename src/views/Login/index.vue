@@ -128,9 +128,6 @@ export default {
           }
         }
       }
-    },
-    increment() {
-      this.$store.commit('setNumber', 1)
     }
   }
 }
