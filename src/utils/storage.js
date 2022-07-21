@@ -19,5 +19,7 @@ class Storage {
     localStorage.removeItem(key)
   }
 }
+
 const storage = new Storage()
+
 export default storage

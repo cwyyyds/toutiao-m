@@ -1,6 +1,10 @@
 <template>
   <div>
-    <van-cell v-for="(item, index) in highlightData" :key="index">
+    <van-cell
+      v-for="(item, index) in highlightData"
+      :key="index"
+      @click="clickFn(index)"
+    >
       <template #icon>
         <van-icon name="search" class="search-icon" />
       </template>
@@ -14,10 +18,13 @@
 
 <script>
 import { getSearchSuggestion } from '@/api'
+
 export default {
   data() {
     return {
-      suggestions: []
+      suggestions: [],
+      rawData: '',
+      historyList: []
     }
   },
   props: {
@@ -43,9 +50,17 @@ export default {
         }
 
         this.suggestions = res.data.data.options.filter(Boolean)
+        this.rawData = res.data.data.options
       } catch (error) {
         console.log(error)
       }
+    },
+    clickFn(index) {
+      let res = this.suggestions[index]
+      this.$emit('clickFn', res)
+      this.historyList = this.$store.state.historyList
+      this.historyList.unshift(res)
+      this.$store.commit('setHistory', this.historyList)
     }
   },
   computed: {

@@ -12,7 +12,11 @@
         class="search"
       />
     </form>
-    <component :is="componentName" :keywords="keywords"></component>
+    <component
+      :is="componentName"
+      :keywords="keywords"
+      @clickFn="onSearch"
+    ></component>
   </div>
 </template>
 
@@ -44,9 +48,9 @@ export default {
     }
   },
   methods: {
-    onSearch() {
+    onSearch(value) {
+      this.keywords = value
       this.isShowSearchResult = true
-      console.log('正在搜索')
     },
 
     backToPage() {
