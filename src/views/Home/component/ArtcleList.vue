@@ -18,6 +18,7 @@
           v-for="(item, index) in articles"
           :key="index"
           :articleInfo="item"
+          @clickFn="articleIdFn(item.art_id)"
         ></ArticleItem>
       </van-list>
     </van-pull-refresh>
@@ -94,6 +95,9 @@ export default {
         this.loading = false
         this.isLoading = false
       }
+    },
+    articleIdFn(id) {
+      this.$router.push('/detail/' + id)
     }
   }
 }
