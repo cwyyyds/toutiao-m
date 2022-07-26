@@ -59,8 +59,11 @@ export default {
       let res = this.suggestions[index]
       this.$emit('clickFn', res)
       this.historyList = this.$store.state.historyList
-      this.historyList.unshift(res)
-      this.$store.commit('setHistory', this.historyList)
+      console.log(!!this.historyList.find((item) => item === res))
+      if (!this.historyList.find((item) => item === res)) {
+        this.historyList.unshift(res)
+        this.$store.commit('setHistory', this.historyList)
+      }
     }
   },
   computed: {

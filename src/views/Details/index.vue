@@ -1,76 +1,100 @@
 <template>
   <div class="details">
+    <!-- 导航栏 -->
     <van-nav-bar
       title="黑马头条"
       left-arrow
-      @click-left="onClickLeft"
+      @click-left="$router.back()"
       class="details-navBar"
     />
+
     <!-- 标题 -->
-    <h2 class="details-title">{{ articleObj.title }}</h2>
+    <h2 class="details-title">{{ articleObj.msg.title }}</h2>
     <!-- 用户信息 -->
-    <div class="details-userInfo">
-      <div class="details-userInfo-L">
-        <span>
-          <img :src="articleObj.aut_photo" alt="" />
-        </span>
-        <ul>
-          <li>{{ articleObj.aut_name }}</li>
-          <li>{{ articleObj.comm_count }}</li>
-        </ul>
-      </div>
-      <div class="details-userInfo-R">
-        <van-button round type="info" size="small"
-          ><van-icon name="plus" />关注</van-button
-        >
-      </div>
-    </div>
+    <userInfo :upId="upId" v-if="upId.length"></userInfo>
     <!-- 内容 -->
-    <div v-html="articleObj.content" class="details-text"></div>
+    <div v-html="articleObj.msg.content" class="details-text"></div>
+
     <!-- 分割线 -->
-    <van-divider>正文结束</van-divider>
+    <van-divider id="fenge">正文结束</van-divider>
+    <!-- 加载 -->
+    <van-loading color="#1989fa" />
     <!-- 评论 -->
-    <div class="details-comment">评论</div>
+    <levelOneComment
+      :oneCommentList="commentList"
+      :CommentNumber="CommentNumber"
+      @refresh="getDetailsComment()"
+    ></levelOneComment>
+
     <!-- 底部栏 -->
-    <div class="details-bottom">
-      <van-tabbar v-model="active">
-        <van-button type="default">默认按钮</van-button>
-        <van-tabbar-item icon="chat-o" badge="9"></van-tabbar-item>
-        <van-tabbar-item icon="star-o"></van-tabbar-item>
-        <van-tabbar-item icon="good-job-o"></van-tabbar-item>
-        <van-tabbar-item icon="share"></van-tabbar-item>
-      </van-tabbar>
-    </div>
+    <detailsFooter
+      :CommentNumber="CommentNumber"
+      :upId="upId"
+      @refresh="getDetailsComment()"
+    ></detailsFooter>
   </div>
 </template>
 
 <script>
-import { getDetails } from '@/api'
+import { getDetails, getDetailsComment } from '@/api'
+
+import levelOneComment from './components/levelOneComment.vue'
+import userInfo from './components/userInfo.vue'
+import detailsFooter from './components/detailsFooter.vue'
+
 export default {
-  data() {
+  provide() {
     return {
-      articleObj: {},
-      active: 0
+      articleObj: this.articleObj
     }
   },
+
+  data() {
+    return {
+      upId: '',
+      articleObj: {
+        msg: ''
+      },
+      commentList: [],
+      CommentNumber: 0
+    }
+  },
+
   methods: {
     async getDetails(id) {
       const res = await getDetails(id)
-      this.articleObj = res.data.data
+      this.articleObj.msg = res.data.data
+      this.upId = res.data.data.aut_id
     },
-    onClickLeft() {
-      this.$router.back()
+    //获取所有评论列表
+    async getDetailsComment() {
+      const res = await getDetailsComment(this.$route.params.keywords)
+      this.commentList = res.data.data.results
+      this.CommentNumber = res.data.data.total_count
     }
   },
+
   created() {
     this.getDetails(this.$route.params.keywords)
+    this.getDetailsComment()
+  },
+  components: {
+    levelOneComment,
+    userInfo,
+    detailsFooter
   }
 }
 </script>
 
 <style lang="less" scoped>
+.details {
+  padding-bottom: 1.13rem;
+}
+//导航栏
 .details-navBar {
   background-color: #3296fa;
+  width: 100%;
+  position: fixed;
   /deep/.van-icon-arrow-left {
     color: #fff;
   }
@@ -85,47 +109,11 @@ export default {
   margin: 0;
   color: #3a3a3a;
 }
-//用户信息
-.details-userInfo {
-  display: flex;
-  justify-content: space-between;
-  padding: 0rem 0.42667rem;
-  .details-userInfo-L {
-    display: flex;
-    font-size: 0.2rem;
-    img {
-      width: 0.93333rem;
-      height: 0.93333rem;
-      margin-right: 0.22667rem;
-      border-radius: 100%;
-    }
-    li {
-      &:nth-child(1) {
-        color: #000;
-        margin-bottom: 0.15rem;
-      }
-      &:nth-child(2) {
-        font-size: 0.30667rem;
-        color: #b7b7b7;
-      }
-    }
-  }
 
-  .details-userInfo-R {
-    /deep/.van-button--info {
-      padding: 0 0.5rem;
-      .van-icon-plus {
-        margin-right: 0.15rem;
-      }
-    }
-  }
-}
 //内容
 .details-text {
   -webkit-text-size-adjust: 100%;
   color: #24292e;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial,
-    sans-serif, Apple Color Emoji, Segoe UI Emoji;
   font-size: 0.21333rem;
   line-height: 1.5;
   word-wrap: break-word;
@@ -150,14 +138,20 @@ export default {
   /deep/p {
     text-align: justify;
   }
-}
-//品论
-.details-comment {
-  margin-bottom: 2.06667rem;
-}
-//底部栏
-/deep/.details-bottom {
-  height: 1.2rem;
-  border-radius: 1px solid #d8d8d8;
+  /deep/table {
+    width: 100% !important;
+    display: block;
+    overflow: auto;
+    border-collapse: collapse;
+  }
+  /deep/tbody {
+    tr {
+      background-color: #fff;
+    }
+    td {
+      padding: 0.08rem 0.17333rem;
+      border: 0.01333rem solid #dfe2e5;
+    }
+  }
 }
 </style>

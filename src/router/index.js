@@ -38,6 +38,10 @@ const routes = [
   {
     path: '/detail/:keywords',
     component: () => import('@/views/Details')
+  },
+  {
+    path: '/editData/',
+    component: () => import('@/views/EditData')
   }
 ]
 

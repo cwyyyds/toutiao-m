@@ -4,15 +4,12 @@
   </div>
 </template>
 <script>
-import requset from "@/utils/request";
+import requset from '@/utils/request'
 export default {
   data() {
-    return {};
-  },
-  created() {
-    console.dir(requset);
-  },
-};
+    return {}
+  }
+}
 </script>
 <style lang="less">
 .login {
